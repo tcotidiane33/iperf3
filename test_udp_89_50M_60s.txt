@@ -1,0 +1,18 @@
+TEST : IPERF3 UDP VERS 89.187.165.1 – 50 Mbit/s, 60 s
+Date : 03/03/2026
+
+Commande :
+  iperf3 -c 89.187.165.1 -u -b 50M -t 60
+
+Sortie brute :
+  Connecting to host 89.187.165.1, port 5201
+  iperf3: error - unable to read from stream socket: Resource temporarily unavailable
+
+INTERPRÉTATION :
+- Comme lors du test 30 s à 50 Mbit/s, le client établit la connexion UDP mais iperf3 échoue rapidement en lecture sur le socket.
+- Ce comportement est typique :
+  - d’une **limitation ou d’une protection** côté serveur de test public,
+  - ou d’une configuration réseau (pare‑feu, QoS, policing) qui empêche le support de 50 Mbit/s UDP soutenus vers ce serveur.
+- À ce stade, on ne peut pas conclure que **ton lien** ne supporte pas 50 Mbit/s UDP ; on constate surtout que **ce serveur public** n’est pas fiable comme référence à ce débit.
+- Pour valider un débit UDP plus élevé, il faudra utiliser un **serveur iPerf contrôlé** (datacenter de test, VPS, autre site MTN) et rejouer les mêmes paliers.
+

@@ -1,0 +1,61 @@
+TEST : IPERF3 TCP VERS 89.187.165.1 – 30 s, 4 FLUX
+Date : 03/03/2026
+
+Commande :
+  iperf3 -c 89.187.165.1 -t 30 -P 4
+
+Sortie brute :
+  Connecting to host 89.187.165.1, port 5201
+  [  7] local 192.168.50.222 port 53673 connected to 89.187.165.1 port 5201
+  [  9] local 192.168.50.222 port 53674 connected to 89.187.165.1 port 5201
+  [ 11] local 192.168.50.222 port 53675 connected to 89.187.165.1 port 5201
+  [ 13] local 192.168.50.222 port 53676 connected to 89.187.165.1 port 5201
+  [ ID] Interval           Transfer     Bitrate
+  [  7]   0.00-1.00   sec  1.50 MBytes  12.5 Mbits/sec
+  [  9]   0.00-1.00   sec  1.50 MBytes  12.5 Mbits/sec
+  [ 11]   0.00-1.00   sec  2.50 MBytes  20.9 Mbits/sec
+  [ 13]   0.00-1.00   sec  1.38 MBytes  11.5 Mbits/sec
+  [SUM]   0.00-1.00   sec  6.88 MBytes  57.5 Mbits/sec
+
+  [  7]   1.00-2.00   sec  1.50 MBytes  12.6 Mbits/sec
+  [  9]   1.00-2.00   sec  2.38 MBytes  20.0 Mbits/sec
+  [ 11]   1.00-2.00   sec  4.00 MBytes  33.7 Mbits/sec
+  [ 13]   1.00-2.00   sec  3.75 MBytes  31.6 Mbits/sec
+  [SUM]   1.00-2.00   sec  11.6 MBytes  97.9 Mbits/sec
+
+  [  7]   2.00-3.00   sec  0.00 Bytes  0.00 bits/sec
+  [  9]   2.00-3.00   sec   128 KBytes  1.05 Mbits/sec
+  [ 11]   2.00-3.00   sec  0.00 Bytes  0.00 bits/sec
+  [ 13]   2.00-3.00   sec  0.00 Bytes  0.00 bits/sec
+  [SUM]   2.00-3.00   sec   128 KBytes  1.05 Mbits/sec
+
+  ... (intervalles 3 à 29 s : débit total ~0.00 bits/sec)
+
+  [  7]  29.00-30.00  sec  0.00 Bytes  0.00 bits/sec
+  [  9]  29.00-30.00  sec  0.00 Bytes  0.00 bits/sec
+  [ 11]  29.00-30.00  sec  0.00 Bytes  0.00 bits/sec
+  [ 13]  29.00-30.00  sec  0.00 Bytes  0.00 bits/sec
+  [SUM]  29.00-30.00  sec  0.00 Bytes  0.00 bits/sec
+
+  [ ID] Interval           Transfer     Bitrate
+  [  7]   0.00-30.00  sec  3.00 MBytes   839 Kbits/sec                  sender
+  [  7]   0.00-30.11  sec  1.66 MBytes   463 Kbits/sec                  receiver
+  [  9]   0.00-30.00  sec  4.00 MBytes  1.12 Mbits/sec                  sender
+  [  9]   0.00-30.11  sec  1.97 MBytes   548 Kbits/sec                  receiver
+  [ 11]   0.00-30.00  sec  6.50 MBytes  1.82 Mbits/sec                  sender
+  [ 11]   0.00-30.11  sec  3.28 MBytes   915 Kbits/sec                  receiver
+  [ 13]   0.00-30.00  sec  5.12 MBytes  1.43 Mbits/sec                  sender
+  [ 13]   0.00-30.11  sec  2.26 MBytes   629 Kbits/sec                  receiver
+  [SUM]   0.00-30.00  sec  18.6 MBytes  5.21 Mbits/sec                  sender
+  [SUM]   0.00-30.11  sec  9.17 MBytes  2.56 Mbits/sec                  receiver
+
+  iperf Done.
+
+INTERPRÉTATION :
+- Les 2 premières secondes montent jusqu’à ~100 Mbit/s cumulés, ce qui montre que la chaîne (client + réseau + serveur) peut atteindre ce débit.
+- Ensuite, le débit chute quasiment à 0 Mbit/s sur la majorité des 30 s, ce qui ramène la moyenne à ~2,5 Mbit/s reçu.
+- Ce profil (pic initial élevé puis plateau quasi nul) est typique :
+  - soit d’une **limitation/policy côté serveur de test** (coupe ou bride les flux après quelques secondes),
+  - soit d’une forte congestion/QoS sur le chemin retour.
+- On peut néanmoins conclure que le lien **n’est pas plafonné** à 2–5 Mbit/s puisqu’on voit des pointes proches de 100 Mbit/s.
+

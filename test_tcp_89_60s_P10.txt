@@ -1,0 +1,48 @@
+TEST : IPERF3 TCP VERS 89.187.165.1 – 60 s, 10 FLUX
+Date : 03/03/2026
+
+Commande :
+  iperf3 -c 89.187.165.1 -t 60 -P 10
+
+Sortie brute (extraits) :
+  Connecting to host 89.187.165.1, port 5201
+  [  7] local 192.168.50.222 port 54923 connected to 89.187.165.1 port 5201
+  ...
+  [ 25] local 192.168.50.222 port 54932 connected to 89.187.165.1 port 5201
+
+  [ ID] Interval           Transfer     Bitrate
+  [  7]   0.00-1.00   sec   640 KBytes  5.22 Mbits/sec
+  [  9]   0.00-1.00   sec   640 KBytes  5.22 Mbits/sec
+  ...
+  [ 25]   0.00-1.00   sec   640 KBytes  5.22 Mbits/sec
+  [SUM]   0.00-1.00   sec  7.00 MBytes  58.5 Mbits/sec
+
+  [SUM]   1.00-2.00   sec  15.8 MBytes  132 Mbits/sec
+  [SUM]   2.00-3.00   sec   128 KBytes  1.05 Mbits/sec
+  [SUM]   3.00-5.00   sec  0.00 Bytes  0.00 bits/sec
+  [SUM]   5.00-6.00   sec  4.25 MBytes  35.7 Mbits/sec
+  [SUM]   6.00-10.00  sec ~4.4 MBytes/s ~36.7 Mbits/sec
+  ...
+  [SUM]  59.00-60.00  sec  5.25 MBytes  44.0 Mbits/sec
+
+Résumé fin de test :
+  [ ID] Interval           Transfer     Bitrate
+  [  7]   0.00-60.00  sec  2.88 MBytes   402 Kbits/sec                  sender
+  [  9]   0.00-60.00  sec   121 MBytes  16.9 Mbits/sec                  sender
+  [ 11]   0.00-60.00  sec  31.5 MBytes  4.40 Mbits/sec                  sender
+  ...
+  [ 25]   0.00-60.00  sec  2.50 MBytes   349 Kbits/sec                  sender
+
+  [SUM]   0.00-60.00  sec   270 MBytes  37.7 Mbits/sec                  sender
+  [SUM]   0.00-60.37  sec   262 MBytes  36.4 Mbits/sec                  receiver
+
+  iperf Done.
+
+INTERPRÉTATION :
+- Débit moyen total multi‑flux (~10 flux) d’environ **36 Mbit/s** sur 60 secondes.
+- Le débit global est **proche** de celui obtenu en mono‑flux (~31 Mbit/s), on ne voit pas une multiplication par 5 ou 10.
+- On en déduit :
+  - qu’il n’y a pas de bridage fort « par connexion » (sinon le multi‑flux serait beaucoup plus haut que le mono‑flux),
+  - que la **capacité effective** du lien vers ce serveur est plutôt aux alentours de **30–40 Mbit/s** dans ces conditions de test.
+- Les variations (pics à >100 Mbit/s, intervalles à 0) confirment un réseau WAN partagé avec congestion/policing ponctuels, mais la moyenne reste stable.
+

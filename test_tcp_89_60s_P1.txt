@@ -1,0 +1,37 @@
+TEST : IPERF3 TCP VERS 89.187.165.1 – 60 s, 1 FLUX
+Date : 03/03/2026
+
+Commande :
+  iperf3 -c 89.187.165.1 -t 60 -P 1
+
+Sortie brute (résumé) :
+  [ ID] Interval           Transfer     Bitrate
+  [  7]   0.00-1.00   sec  3.38 MBytes  28.3 Mbits/sec
+  [  7]   1.00-2.00   sec  7.00 MBytes  58.5 Mbits/sec
+  [  7]   2.00-3.00   sec   384 KBytes  3.15 Mbits/sec
+  [  7]   3.00-6.00   sec  0.00 Bytes  0.00 bits/sec
+  ...
+  [  7]  19.00-20.00  sec  6.62 MBytes  55.3 Mbits/sec
+  [  7]  20.00-30.00  sec ~5 MBytes/s  ~42 Mbits/sec quasi stables
+  ...
+  [  7]  33.00-42.00  sec ~5 MBytes/s  ~42 Mbits/sec
+  [  7]  43.00-44.00  sec  0.00 Bytes  0.00 bits/sec
+  ...
+  [  7]  59.00-60.00  sec  4.50 MBytes  37.8 Mbits/sec
+
+  [ ID] Interval           Transfer     Bitrate
+  [  7]   0.00-60.00  sec   226 MBytes  31.7 Mbits/sec                  sender
+  [  7]   0.00-60.14  sec   224 MBytes  31.3 Mbits/sec                  receiver
+
+  iperf Done.
+
+INTERPRÉTATION :
+- Débit moyen mono‑flux d’environ **31 Mbit/s** sur 60 secondes.
+- Comportement :
+  - pics récurrents autour de **55–60 Mbit/s**,
+  - quelques intervalles à 0 Mbit/s,
+  - de longues séquences assez stables à ~42 Mbit/s.
+- Cela montre que :
+  - la liaison (client ↔ 89.187.165.1) **peut dépasser 50 Mbit/s** sur un flux TCP,
+  - mais le débit instantané est un peu variable, typique d’un lien WAN partagé (congestion, partage avec d’autres flux).
+

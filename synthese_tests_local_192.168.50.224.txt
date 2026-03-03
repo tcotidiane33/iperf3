@@ -1,0 +1,131 @@
+SYNTHÈSE DES TESTS IPERF3 – CLIENT 192.168.50.222 ↔ SERVEUR 192.168.50.224
+Date : 03/03/2026
+
+------------------------------------------------------------------------------
+1) RÉSUMÉ PAR TEST
+------------------------------------------------------------------------------
+
+| # | Fichier         | Commande principale                                                | Durée | Flux | Type | Débit moyen (sender) | Débit moyen (receiver) | Pertes  | Jitter  | Verdict |
+|---|-----------------|--------------------------------------------------------------------|-------|------|------|-----------------------|-------------------------|--------|---------|---------|
+| 1 | tcp_1flux.txt   | iperf3 -c 192.168.50.224 -t 60 -i 5                                | 60 s  | 1    | TCP  | ~45,4 Mbit/s          | ~45,4 Mbit/s            | n/a    | n/a     | OK      |
+| 2 | tcp_8flux.txt   | iperf3 -c 192.168.50.224 -P 8 -t 60 -i 5                           | 60 s  | 8    | TCP  | ~52,9 Mbit/s          | ~52,9 Mbit/s            | n/a    | n/a     | OK      |
+| 3 | tcp_duplex.txt  | iperf3 -c 192.168.50.224 -P 4 -t 60 -i 5 -d                        | 60 s  | 4x2  | TCP  | ~56,6 Mbit/s/sens     | ~56,6 Mbit/s/sens       | n/a    | n/a     | OK      |
+| 4 | udp_100M.txt    | iperf3 -c 192.168.50.224 -u -b 100M -P 1 -t 30 -i 3                | 30 s  | 1    | UDP  | ~94,3 Mbit/s          | ~21,2 Mbit/s            | 0 %    | ~1,2 ms | LIMITE S (serveur) |
+| 5 | udp_500M.txt    | iperf3 -c 192.168.50.224 -u -b 500M -P 4 -t 60 -i 5                | 60 s  | 4    | UDP  | échec                 | échec                   | n/a    | n/a     | KO (trop agressif) |
+| 6 | udp_mtu.txt     | iperf3 -c 192.168.50.224 -u -b 900M --set-mss 1400 -P 4 -t 60      | 60 s  | 4    | UDP  | échec                 | échec                   | n/a    | n/a     | KO (trop agressif) |
+
+Légende Verdict :
+- **OK** : test stable, sans anomalie majeure.
+- **LIMITE S (serveur)** : limitation visible côté serveur (CPU/stack/QoS) plus que sur le lien.
+- **KO (trop agressif)** : paramètres au‑delà de la capacité raisonnable de la machine/lien.
+
+------------------------------------------------------------------------------
+2) ANALYSE TCP – VARIATION DE DÉBIT ET FENÊTRE DE CONGESTION
+------------------------------------------------------------------------------
+
+Tests concernés : `tcp_1flux.txt`, `tcp_8flux.txt`, `tcp_duplex.txt`
+
+2.1. TCP mono‑flux (`tcp_1flux.txt`)
+- Profil par intervalle 5 s (débits approximatifs) :
+  - 0–5 s   : ~41 Mbit/s
+  - 5–10 s  : ~26 Mbit/s
+  - 10–20 s : ~49–50 Mbit/s
+  - 20–40 s : ~42–48 Mbit/s
+  - 40–60 s : ~38–51 Mbit/s
+- Moyenne globale : ~45,4 Mbit/s (sender/receiver identiques).
+
+Interprétation :
+- La **fenêtre de congestion TCP** augmente et diminue en fonction :
+  - des ACKs reçus,
+  - d’éventuelles micro‑pertes ou signaux de congestion.
+- Le débit oscille dans une plage **26–56 Mbit/s**, mais reste globalement autour de **45–50 Mbit/s**, ce qui reflète bien la **capacité disponible** sur ce trajet.
+
+2.2. TCP multi‑flux (`tcp_8flux.txt`)
+- Somme des 8 flux par 5 s :
+  - entre ~39 et ~67 Mbit/s selon les intervalles.
+- Moyenne globale : ~52,9 Mbit/s.
+
+Interprétation :
+- En ajoutant des flux (`-P 8`), TCP :
+  - remplit mieux les « trous » de congestion,
+  - réduit la sensibilité d’un seul flux à une micro‑perte.
+- Le débit global augmente légèrement (45 → ~53 Mbit/s), mais **ne se multiplie pas** :
+  - il n’y a pas de bridage fort « par connexion »,
+  - la **limite physique/partagée** du lien se situe autour de 50–60 Mbit/s.
+
+2.3. TCP bidirectionnel (`tcp_duplex.txt`)
+- [SUM] par 5 s : ~45–66 Mbit/s par sens.
+- Fin de test :
+  - ~56,6 Mbit/s en upload (sender),
+  - ~56,6 Mbit/s en download (receiver).
+
+Interprétation :
+- La liaison tient **~56 Mbit/s dans chaque sens simultanément**, soit environ **110 Mbit/s agrégés**.
+- C’est typique :
+  - d’un lien Ethernet **100 Mbit/s** bien utilisé (avec overhead),
+  - ou d’un environnement où Wi‑Fi / switch / routeur limitent autour de cette valeur.
+- La variation reste modérée, ce qui traduit une **bonne stabilité TCP** sur le LAN.
+
+Conclusion TCP :
+- La capacité réelle entre 192.168.50.222 et 192.168.50.224 est **de l’ordre de 50–60 Mbit/s par sens**, avec un agrégat proche de 100 Mbit/s en duplex.
+- Ajouter des flux (`-P 8`) améliore un peu le débit mais ne révèle pas de bridage par session ; on est limité par le **support physique ou la configuration réseau**, pas par iPerf.
+
+------------------------------------------------------------------------------
+3) ANALYSE UDP – LIMITE RÉELLE ET COMPORTEMENT AUX FORTS DÉBITS
+------------------------------------------------------------------------------
+
+Tests concernés : `udp_100M.txt`, `udp_500M.txt`, `udp_mtu.txt`
+
+3.1. UDP à 100 Mbit/s (`udp_100M.txt`)
+- Par 3 s côté émetteur (sender) :
+  - débits de ~95 à ~102 Mbit/s (très proches de la consigne 100 Mbit/s).
+- Résumé final :
+  - Sender   : 337 MBytes, 94,3 Mbit/s, jitter 0,000 ms, **0/244281 (0 %) perdu**.
+  - Receiver : 75,7 MBytes, 21,2 Mbit/s, jitter ~1,17 ms, **0/242593 (0 %) perdu**.
+
+Interprétation :
+- Le client **peut envoyer** à ~100 Mbit/s sans perte (au niveau iperf3).
+- Le serveur ne comptabilise qu’environ **21 Mbit/s utiles** :
+  - limitation possible de la **pile réseau ou de l’application iPerf3** côté serveur,
+  - éventuelle **QoS / shaping** qui bride ce flux UDP entrant à ~20 Mbit/s,
+  - le tout sans drop apparent (0 % pertes selon iPerf3).
+- Le jitter reste faible (~1 ms), ce qui est bon signe pour la qualité temporelle.
+
+3.2. UDP à 500 Mbit/s et 900 Mbit/s (`udp_500M.txt`, `udp_mtu.txt`)
+- Les deux tests retournent :
+  - `error - unable to read from stream socket: Resource temporarily unavailable`.
+
+Interprétation :
+- À ces niveaux de charge (4 flux × 500 ou 900 Mbit/s), on dépasse :
+  - la capacité des buffers et de la pile réseau de la machine,
+  - les limites raisonnables de traitement UDP (CPU, kernel, configuration OS).
+- Ce n’est plus un test de la **lien** mais un test destructif de la **pile UDP** du serveur.
+- Ces valeurs sont donc **au‑delà de la limite exploitable** pour cette machine.
+
+Conclusion UDP :
+- La liaison peut accepter **en émission** un débit important (≈100 Mbit/s) sans perte apparente, mais la **réception utile** est limitée autour de ~20 Mbit/s dans la configuration actuelle.
+- Les tentatives à 500–900 Mbit/s montrent clairement la **saturation de la pile réseau / de l’OS**, et non du seul câble Ethernet.
+- En pratique, la **limite raisonnable UDP** de ce setup se situe probablement **entre 20 et 100 Mbit/s**, selon que l’on considère :
+  - le point de vue émetteur (capacité brute),
+  - ou le point de vue récepteur (débit effectivement traité).
+
+------------------------------------------------------------------------------
+4) RECOMMANDATIONS POUR ALLER PLUS LOIN
+------------------------------------------------------------------------------
+
+- Ajuster les paramètres côté serveur (192.168.50.224) pour améliorer l’UDP :
+  - Surveiller CPU et IRQ pendant les tests (top, htop, sar, etc.).
+  - Vérifier les buffers UDP (sysctl `net.core.rmem_max`, `net.core.wmem_max`).
+  - Désactiver ou ajuster d’éventuelles QoS / limitations sur l’interface.
+
+- Pour caractériser encore plus finement la **variation de débit** :
+  - exporter les colonnes `Interval` et `Bitrate` de `tcp_8flux.txt` et `tcp_duplex.txt`,
+  - tracer les graphes dans Excel ou un outil de monitoring (Grafana, etc.) pour visualiser la dynamique de la fenêtre de congestion.
+
+- Pour déterminer une **vitesse MAX UDP exploitable** :
+  - répéter `udp_100M` avec des paliers plus fins (ex. 20M, 40M, 60M, 80M, 100M),
+  - retenir le dernier palier où :
+    - pertes < 1–2 %,
+    - jitter reste raisonnable,
+    - CPU serveur ne sature pas.
+

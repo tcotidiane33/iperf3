@@ -1,0 +1,53 @@
+TEST : IPERF3 UDP VERS 89.187.165.1 – 10 Mbit/s, 30 s
+Date : 03/03/2026
+
+Commande :
+  iperf3 -c 89.187.165.1 -u -b 10M -t 30
+
+Sortie brute :
+  Connecting to host 89.187.165.1, port 5201
+  [  7] local 192.168.50.222 port 55383 connected to 89.187.165.1 port 5201
+  [ ID] Interval           Transfer     Bitrate         Total Datagrams
+  [  7]   0.00-1.00   sec  1.20 MBytes  10.0 Mbits/sec  892
+  [  7]   1.00-2.00   sec  1.19 MBytes  10.0 Mbits/sec  887
+  [  7]   2.00-3.00   sec  1.19 MBytes  10.0 Mbits/sec  888
+  [  7]   3.00-4.00   sec  1.19 MBytes  10.0 Mbits/sec  887
+  [  7]   4.00-5.00   sec  1.19 MBytes  9.99 Mbits/sec  887
+  [  7]   5.00-6.00   sec  1.19 MBytes  10.0 Mbits/sec  889
+  [  7]   6.00-7.00   sec  1.19 MBytes  9.99 Mbits/sec  888
+  [  7]   7.00-8.00   sec  1.19 MBytes  10.0 Mbits/sec  887
+  [  7]   8.00-9.00   sec  1.19 MBytes  10.0 Mbits/sec  886
+  [  7]   9.00-10.00  sec  1.19 MBytes  10.0 Mbits/sec  888
+  [  7]  10.00-11.00  sec  1.19 MBytes  9.99 Mbits/sec  890
+  [  7]  11.00-12.00  sec  1.19 MBytes  10.0 Mbits/sec  889
+  [  7]  12.00-13.00  sec  1.19 MBytes  10.0 Mbits/sec  886
+  [  7]  13.00-14.00  sec  1.19 MBytes  9.99 Mbits/sec  890
+  [  7]  14.00-15.00  sec  1.19 MBytes  10.0 Mbits/sec  887
+  [  7]  15.00-16.00  sec  1.19 MBytes  10.0 Mbits/sec  888
+  [  7]  16.00-17.00  sec  1.19 MBytes  9.99 Mbits/sec  886
+  [  7]  17.00-18.00  sec  1.20 MBytes  10.0 Mbits/sec  890
+  [  7]  18.00-19.00  sec  1.19 MBytes  10.0 Mbits/sec  888
+  [  7]  19.00-20.00  sec  1.19 MBytes  10.0 Mbits/sec  887
+  [  7]  20.00-21.00  sec  1.19 MBytes  9.99 Mbits/sec  885
+  [  7]  21.00-22.00  sec  1.20 MBytes  10.0 Mbits/sec  891
+  [  7]  22.00-23.00  sec  1.19 MBytes  10.0 Mbits/sec  887
+  [  7]  23.00-24.00  sec  1.19 MBytes  10.0 Mbits/sec  888
+  [  7]  24.00-25.00  sec  1.19 MBytes  10.0 Mbits/sec  888
+  [  7]  25.00-26.00  sec  1.19 MBytes  10.0 Mbits/sec  888
+  [  7]  26.00-27.00  sec  1.19 MBytes  10.0 Mbits/sec  888
+  [  7]  27.00-28.00  sec  1.19 MBytes  10.0 Mbits/sec  887
+  [  7]  28.00-29.00  sec  1.19 MBytes  9.99 Mbits/sec  887
+  [  7]  29.00-30.00  sec  1.19 MBytes  10.0 Mbits/sec  889
+  - - - - - - - - - - - - - - - - - - - - - - - - -
+  [ ID] Interval           Transfer     Bitrate         Jitter    Lost/Total Datagrams
+  [  7]   0.00-30.00  sec  35.8 MBytes  10.0 Mbits/sec  0.000 ms  0/26638 (0%)  sender
+  [  7]   0.00-30.12  sec  35.8 MBytes  9.96 Mbits/sec  1.495 ms  0/26635 (0%)  receiver
+
+  iperf Done.
+
+INTERPRÉTATION :
+- Débit extrêmement stable à 10 Mbit/s sur toute la durée du test.
+- Aucune perte de datagrammes (0/26635), ce qui est excellent.
+- Jitter très faible (~1,5 ms), adapté aux applications temps réel (voix, vidéo).
+- Conclusion : à ce niveau de débit (10 Mbit/s), la qualité de la liaison (du client jusqu’à 89.187.165.1) est **très bonne** en UDP.
+

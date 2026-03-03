@@ -1,0 +1,187 @@
+RÉSULTATS TESTS IPERF / PING – 03/03/2026
+
+Machine locale : 192.168.50.222
+Serveur 1 : speedtest.iway.ch (95.143.54.63)
+Serveur 2 : 89.187.165.1
+
+------------------------------------------------------------------------------
+1) PING VERS speedtest.iway.ch
+------------------------------------------------------------------------------
+
+Commande :
+  ping -c 20 speedtest.iway.ch
+
+Sortie résumée :
+  20 packets transmitted, 20 packets received, 0.0% packet loss
+  round-trip min/avg/max/stddev = 112.639/116.754/122.842/2.693 ms
+
+INTERPRÉTATION :
+- Latence moyenne stable autour de ~117 ms, variation très faible (~±3 ms).
+- Aucune perte de paquet ICMP.
+- La liaison vers ce serveur présente une latence WAN typique, sans signe évident d’instabilité au niveau de la couche IP (au repos, hors trafic iperf).
+
+------------------------------------------------------------------------------
+2) IPERF3 TCP VERS speedtest.iway.ch – ERREUR SERVEUR
+------------------------------------------------------------------------------
+
+Commande :
+  iperf3 -c speedtest.iway.ch -t 30 -P 4
+
+Sortie (les deux tentatives) :
+  iperf3: error - the server is busy running a test. try again later
+
+INTERPRÉTATION :
+- Le serveur public iway refuse le test parce qu’il est déjà occupé par un autre client.
+- Il ne s’agit pas d’un problème de réseau local, mais d’une **limitation côté serveur de test**.
+- Pour obtenir un débit fiable, il faudra :
+  - soit réessayer plus tard,
+  - soit utiliser un autre serveur iperf3,
+  - soit déployer son propre serveur iperf3 de mesure.
+
+------------------------------------------------------------------------------
+3) PING VERS 89.187.165.1
+------------------------------------------------------------------------------
+
+Commande :
+  ping -c 20 89.187.165.1
+
+Sortie résumée :
+  20 packets transmitted, 20 packets received, 0.0% packet loss
+  round-trip min/avg/max/stddev = 107.251/111.851/131.122/5.262 ms
+
+INTERPRÉTATION :
+- Latence moyenne ~112 ms, très proche de speedtest.iway.ch.
+- Aucune perte ICMP, mais une dispersion un peu plus forte (jusqu’à ~131 ms), ce qui indique un peu plus de variabilité de délai.
+- Globalement la latence reste correcte et sans pertes, ce qui est cohérent avec un lien WAN stable.
+
+------------------------------------------------------------------------------
+4) IPERF3 TCP VERS 89.187.165.1 – 30 s, 4 FLUX
+------------------------------------------------------------------------------
+
+Commande :
+  iperf3 -c 89.187.165.1 -t 30 -P 4
+
+Extraits de la sortie (début) :
+  [ ID] Interval           Transfer     Bitrate
+  [  7]   0.00-1.00   sec  1.50 MBytes  12.5 Mbits/sec
+  [  9]   0.00-1.00   sec  1.50 MBytes  12.5 Mbits/sec
+  [ 11]   0.00-1.00   sec  2.50 MBytes  20.9 Mbits/sec
+  [ 13]   0.00-1.00   sec  1.38 MBytes  11.5 Mbits/sec
+  [SUM]   0.00-1.00   sec  6.88 MBytes  57.5 Mbits/sec
+
+  [  7]   1.00-2.00   sec  1.50 MBytes  12.6 Mbits/sec
+  [  9]   1.00-2.00   sec  2.38 MBytes  20.0 Mbits/sec
+  [ 11]   1.00-2.00   sec  4.00 MBytes  33.7 Mbits/sec
+  [ 13]   1.00-2.00   sec  3.75 MBytes  31.6 Mbits/sec
+  [SUM]   1.00-2.00   sec  11.6 MBytes  97.9 Mbits/sec
+
+Puis, à partir de 2 s jusqu’à 30 s, on observe pratiquement :
+  [SUM]   x.00-y.00   sec  0.00 Bytes  0.00 bits/sec
+
+Résumé fin de test :
+  [SUM]   0.00-30.00  sec  18.6 MBytes  5.21 Mbits/sec                  sender
+  [SUM]   0.00-30.11  sec  9.17 MBytes  2.56 Mbits/sec                  receiver
+
+INTERPRÉTATION :
+- Sur les 2 premières secondes, le débit cumulé monte à **~100 Mbit/s**, ce qui montre que la chaîne (client + réseau + serveur) est **capable d’atteindre au moins ce débit**.
+- Ensuite, le débit retombe quasiment à **0 Mbit/s** pendant la majeure partie de la fenêtre de 30 s.
+- Le débit moyen final est donc très faible (~2,5 Mbit/s reçu).
+
+Causes possibles :
+- **Contrainte côté serveur de test** :
+  - Limitation volontaire de la durée / volume ou policy qui coupe les flux après quelques secondes.
+  - Saturation ou QoS sur l’interface du serveur ou sur la route retour.
+- **Contrôle de congestion TCP** :
+  - Forte congestion ou file d’attente quelque part, faisant chuter la fenêtre de congestion et entraînant un débit quasi nul.
+  - Cependant, l’absence d’augmentation progressive/oscillante mais plutôt un plateau très bas suggère plutôt une coupure/limitation artificielle.
+
+Ce que l’on peut affirmer :
+- Le lien **n’est pas plafonné** à 2,5 Mbit/s : on voit clairement des pics à ~100 Mbit/s.
+- Le problème n’est pas un simple « débit max » limité, mais **une instabilité ou une politique de limitation** en cours de test.
+- Pour valider complètement le comportement côté réseau local, il faudrait :
+  - tester un autre serveur iperf3 ou
+  - installer son propre serveur iperf3 (par exemple sur un VPS ou une machine dans un autre site).
+
+------------------------------------------------------------------------------
+5) IPERF3 UDP VERS 89.187.165.1 – 50 Mbit/s, 30 s
+------------------------------------------------------------------------------
+
+Commande :
+  iperf3 -c 89.187.165.1 -u -b 50M -t 30
+
+Sortie :
+  Connecting to host 89.187.165.1, port 5201
+  iperf3: error - unable to read from stream socket: Resource temporarily unavailable
+
+INTERPRÉTATION :
+- L’erreur arrive après la connexion : le client arrive à ouvrir la session UDP, mais la lecture du socket côté client échoue.
+- Causes probables :
+  - Limitation/filtrage du trafic UDP à ce débit (50 Mbit/s) sur le chemin, ou côté serveur.
+  - Charge importante ou configuration spécifique du serveur iperf3 qui empêche de traiter ce niveau de débit.
+- Cela confirme que le **serveur de test n’est pas totalement fiable comme « référence neutre »** pour caractériser ton lien.
+
+------------------------------------------------------------------------------
+6) IPERF3 UDP VERS 89.187.165.1 – 10 Mbit/s, 30 s
+------------------------------------------------------------------------------
+
+Commande :
+  iperf3 -c 89.187.165.1 -u -b 10M -t 30
+
+Extrait de la sortie (par seconde) :
+  [  7]   0.00-1.00   sec  1.20 MBytes  10.0 Mbits/sec  892
+  [  7]   1.00-2.00   sec  1.19 MBytes  10.0 Mbits/sec  887
+  ...
+  [  7]  29.00-30.00  sec  1.19 MBytes  10.0 Mbits/sec  889
+
+Résumé fin de test :
+  [  7]   0.00-30.00  sec  35.8 MBytes  10.0 Mbits/sec  0.000 ms  0/26638 (0%)  sender
+  [  7]   0.00-30.12  sec  35.8 MBytes  9.96 Mbits/sec  1.495 ms  0/26635 (0%)  receiver
+
+INTERPRÉTATION :
+- Le débit est **parfaitement stable** à 10 Mbit/s sur 30 s.
+- Pertes de paquets : **0 % (0/26635)** côté serveur, ce qui est excellent.
+- Jitter ~1,5 ms : très faible, excellent pour de la voix/vidéo temps-réel.
+
+Conclusion locale pour l’UDP à 10 Mbit/s :
+- La liaison réseau (du client jusqu’au serveur) tient très bien un débit constant de 10 Mbit/s en UDP sans pertes ni jitter significatif.
+- Cela signifie que, **à ce niveau de débit**, ton lien est de très bonne qualité du point de vue :
+  - de la stabilité du débit,
+  - de l’absence de pertes,
+  - de la faible variabilité de délai.
+
+------------------------------------------------------------------------------
+7) SYNTHÈSE GLOBALE DES TESTS
+------------------------------------------------------------------------------
+
+Ce que montrent ces mesures :
+- **Latence** :
+  - Pings vers les deux serveurs ~110–120 ms, sans pertes.
+  - Légère variabilité sur 89.187.165.1, mais rien d’anormal pour un lien WAN.
+
+- **TCP (débit max)** :
+  - On voit des plafonds ponctuels autour de **100 Mbit/s** au début du test TCP vers 89.187.165.1.
+  - Puis le débit tombe quasi à **0 Mbit/s** sur la suite des 30 s, ce qui donne un débit moyen très faible (~2,5 Mbit/s).
+  - Ce profil est typique d’une **limitation ou d’un comportement particulier du serveur de test**, pas d’un simple « lien limité ».
+
+- **UDP (qualité de transport)** :
+  - À 10 Mbit/s, le lien est **exemplaire** : 0 % de pertes, jitter très faible (~1,5 ms).
+  - À 50 Mbit/s, le serveur (ou le chemin) ne supporte pas la charge et renvoie une erreur, ce qui indique une limite de capacité ou de configuration.
+
+Ce que l’on peut conclure :
+- Ton accès réseau semble **sain** pour des débits modestes (10 Mbit/s) et pour la latence de base :
+  - pas de pertes ICMP,
+  - pas de pertes UDP à 10 Mbit/s,
+  - jitter très faible.
+- Les comportements « bizarres » observés (TCP qui s’effondre après quelques secondes, erreur iperf3 en UDP à 50 Mbit/s, serveur speedtest.iway.ch occupé) sont **fortement liés aux serveurs de test publics** eux-mêmes.
+
+Recommandations pour aller plus loin :
+- Mettre en place ton **propre serveur iperf3** (sur un VPS ou une machine distante contrôlée) pour :
+  - éviter les limitations et la charge des serveurs publics,
+  - obtenir des mesures cohérentes sur de longues durées.
+- Décliner la même batterie de tests (TCP, UDP, ping) :
+  - en LAN filaire,
+  - en Wi‑Fi,
+  - via VPN,
+  - via 4G/5G,
+  afin de comparer la qualité de chaque topologie dans des conditions maîtrisées.
+

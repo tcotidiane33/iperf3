@@ -1,0 +1,95 @@
+TEST : IPERF3 TCP VERS speedtest.iway.ch – 10 s, 4 FLUX
+Date : 03/03/2026
+
+Commande :
+  iperf3 -c speedtest.iway.ch -t 10 -P 4
+
+Sortie brute :
+  Connecting to host speedtest.iway.ch, port 5201
+  [  9] local 192.168.50.222 port 53503 connected to 95.143.54.63 port 5201
+  [ 11] local 192.168.50.222 port 53504 connected to 95.143.54.63 port 5201
+  [ 13] local 192.168.50.222 port 53506 connected to 95.143.54.63 port 5201
+  [ 15] local 192.168.50.222 port 53507 connected to 95.143.54.63 port 5201
+  [ ID] Interval           Transfer     Bitrate
+  [  9]   0.00-1.00   sec  2.50 MBytes  20.9 Mbits/sec
+  [ 11]   0.00-1.00   sec  2.50 MBytes  20.9 Mbits/sec
+  [ 13]   0.00-1.00   sec  1.75 MBytes  14.6 Mbits/sec
+  [ 15]   0.00-1.00   sec  1.12 MBytes  9.42 Mbits/sec
+  [SUM]   0.00-1.00   sec  7.88 MBytes  65.9 Mbits/sec
+
+  [  9]   1.00-2.00   sec  2.12 MBytes  17.9 Mbits/sec
+  [ 11]   1.00-2.00   sec  2.50 MBytes  21.0 Mbits/sec
+  [ 13]   1.00-2.00   sec  3.38 MBytes  28.4 Mbits/sec
+  [ 15]   1.00-2.00   sec  3.62 MBytes  30.5 Mbits/sec
+  [SUM]   1.00-2.00   sec  11.6 MBytes  97.7 Mbits/sec
+
+  [  9]   2.00-3.00   sec  0.00 Bytes  0.00 bits/sec
+  [ 11]   2.00-3.00   sec  0.00 Bytes  0.00 bits/sec
+  [ 13]   2.00-3.00   sec  0.00 Bytes  0.00 bits/sec
+  [ 15]   2.00-3.00   sec  0.00 Bytes  0.00 bits/sec
+  [SUM]   2.00-3.00   sec  0.00 Bytes  0.00 bits/sec
+
+  [  9]   3.00-4.00   sec  2.38 MBytes  20.0 Mbits/sec
+  [ 11]   3.00-4.00   sec  1.75 MBytes  14.7 Mbits/sec
+  [ 13]   3.00-4.00   sec  0.00 Bytes  0.00 bits/sec
+  [ 15]   3.00-4.00   sec  0.00 Bytes  0.00 bits/sec
+  [SUM]   3.00-4.00   sec  4.12 MBytes  34.7 Mbits/sec
+
+  [  9]   4.00-5.00   sec  1.12 MBytes  9.40 Mbits/sec
+  [ 11]   4.00-5.00   sec  0.00 Bytes  0.00 bits/sec
+  [ 13]   4.00-5.00   sec  0.00 Bytes  0.00 bits/sec
+  [ 15]   4.00-5.00   sec  1.00 MBytes  8.36 Mbits/sec
+  [SUM]   4.00-5.00   sec  2.12 MBytes  17.8 Mbits/sec
+
+  [  9]   5.00-6.00   sec  0.00 Bytes  0.00 bits/sec
+  [ 11]   5.00-6.00   sec  5.12 MBytes  43.0 Mbits/sec
+  [ 13]   5.00-6.00   sec  2.25 MBytes  18.9 Mbits/sec
+  [ 15]   5.00-6.00   sec   256 KBytes  2.10 Mbits/sec
+  [SUM]   5.00-6.00   sec  7.62 MBytes  64.0 Mbits/sec
+
+  [  9]   6.00-7.00   sec  1.12 MBytes  9.46 Mbits/sec
+  [ 11]   6.00-7.00   sec  0.00 Bytes  0.00 bits/sec
+  [ 13]   6.00-7.00   sec  2.00 MBytes  16.8 Mbits/sec
+  [ 15]   6.00-7.00   sec   128 KBytes  1.05 Mbits/sec
+  [SUM]   6.00-7.00   sec  3.25 MBytes  27.3 Mbits/sec
+
+  [  9]   7.00-8.00   sec   768 KBytes  6.29 Mbits/sec
+  [ 11]   7.00-8.00   sec  0.00 Bytes  0.00 bits/sec
+  [ 13]   7.00-8.00   sec  0.00 Bytes  0.00 bits/sec
+  [ 15]   7.00-8.00   sec  0.00 Bytes  0.00 bits/sec
+  [SUM]   7.00-8.00   sec   768 KBytes  6.29 Mbits/sec
+
+  [  9]   8.00-9.00   sec  1.12 MBytes  9.41 Mbits/sec
+  [ 11]   8.00-9.00   sec  6.50 MBytes  54.4 Mbits/sec
+  [ 13]   8.00-9.00   sec  2.00 MBytes  16.7 Mbits/sec
+  [ 15]   8.00-9.00   sec  0.00 Bytes  0.00 bits/sec
+  [SUM]   8.00-9.00   sec  9.62 MBytes  80.5 Mbits/sec
+
+  [  9]   9.00-10.00  sec  0.00 Bytes  0.00 bits/sec
+  [ 11]   9.00-10.00  sec   768 KBytes  6.30 Mbits/sec
+  [ 13]   9.00-10.00  sec   128 KBytes  1.05 Mbits/sec
+  [ 15]   9.00-10.00  sec  0.00 Bytes  0.00 bits/sec
+  [SUM]   9.00-10.00  sec   896 KBytes  7.35 Mbits/sec
+
+  [ ID] Interval           Transfer     Bitrate
+  [  9]   0.00-10.00  sec  11.1 MBytes  9.33 Mbits/sec                  sender
+  [  9]   0.00-10.32  sec  10.9 MBytes  8.84 Mbits/sec                  receiver
+  [ 11]   0.00-10.00  sec  19.1 MBytes  16.0 Mbits/sec                  sender
+  [ 11]   0.00-10.32  sec  19.1 MBytes  15.5 Mbits/sec                  receiver
+  [ 13]   0.00-10.00  sec  11.5 MBytes  9.65 Mbits/sec                  sender
+  [ 13]   0.00-10.32  sec  11.0 MBytes  8.94 Mbits/sec                  receiver
+  [ 15]   0.00-10.00  sec  6.12 MBytes  5.14 Mbits/sec                  sender
+  [ 15]   0.00-10.32  sec  5.00 MBytes  4.06 Mbits/sec                  receiver
+  [SUM]   0.00-10.00  sec  47.9 MBytes  40.2 Mbits/sec                  sender
+  [SUM]   0.00-10.32  sec  46.0 MBytes  37.4 Mbits/sec                  receiver
+
+  iperf Done.
+
+INTERPRÉTATION :
+- Débit moyen total reçu ~37,4 Mbit/s sur 10 s, avec des pointes autour de 80–100 Mbit/s et des creux proches de 0.
+- Le comportement est très variable, ce qui indique :
+  - soit une congestion intermittente sur le chemin,
+  - soit des politiques/limitations côté serveur de test,
+  - soit des variations liées au médium d’accès (par ex. Wi‑Fi ou 4G).
+- On voit néanmoins que la chaîne est capable de monter assez haut ponctuellement (> 80 Mbit/s), donc le lien n’est pas limité à 30–40 Mbit/s théoriques ; c’est **l’instabilité** qui réduit le débit moyen.
+
