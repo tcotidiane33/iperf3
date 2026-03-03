@@ -34,17 +34,7 @@ L’architecture sera composée de clients iPerf déjà configurés qui seront i
 Le serveur iPerf sera quant à lui déployé sur le site de Marcory.
 
 ## Prérequis
-| Responsable | Action |
-| :--- | :--- |
-| **KONDRO NETWORKS** | Fourniture du PC client iPerf |
-| **KONDRO NETWORKS** | Fourniture du serveur iPerf |
-| **MTN CI** | Fourniture des adresses IP des clients et serveur iPerf |
-| **MTN CI** | Ouverture du port TCP/UDP 5201 entre les clients et le serveur |
-| **MTN CI** | Présence sur les sites |
-| **MTN CI** | Autorisation ICMP bidirectionnelle entre les clients et le serveur |
-| **MTN CI** | Accès à Internet pour les clients et le serveur |
-| **MTN CI** | Présence physique de MTN sur site |
-| **MTN CI** | Fournir la valeur MTU utilisée sur le réseau IP/MPLS |
+| **TOP SECRET** |
 
 ## Tests de performance
 Les PC clients et Serveurs ont été déjà installés.
