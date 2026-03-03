@@ -77,24 +77,51 @@ iperf3.exe -c 192.168.1.10 -t 1800 -i 3 -f M -P 10
 
 **Mesure serveur vers client en utilisant TCP :**
 ```bash
-iperf3.exe -c @IP_Serveur -R
+# 1. Mesure « rapide » du débit descendant nominal (serveur → client) sur 10 minutes, 10 flux :
+iperf3.exe -c @IP_Serveur -R -t 600 -i 5 -f G -P 10
+
+# 2. Mesure longue (30 minutes) pour vérifier la stabilité dans le temps :
+iperf3.exe -c @IP_Serveur -R -t 1800 -i 10 -f G -P 10
+
+# 3. Mesure dédiée pour détecter un éventuel bridage sur un seul flux (test mono‑flux) :
+iperf3.exe -c @IP_Serveur -R -t 600 -i 5 -f G -P 1
+
+# 4. Même test que (2) mais avec fenêtre TCP ajustée pour les liaisons longue distance (RTT élevée) :
+iperf3.exe -c @IP_Serveur -R -t 1800 -i 10 -f G -P 10 -w 1048576
 ```
+
+**Méthodologie recommandée pour le débit nominal Datacenter ↔ Internet (TCP descendant)** :
+- Lancer d’abord un test **mono‑flux** (`-P 1`) sur 10 minutes ; noter le débit moyen.
+- Puis lancer un test **multi‑flux** (`-P 10`) sur 10 minutes ; comparer :
+  - si le débit multi‑flux est beaucoup plus élevé → limitation par connexion (contrôle de congestion, WAN optimizer, etc.),
+  - si les deux sont proches → le lien est plutôt limité par la capacité physique.
+- Répéter en **heures creuses / heures pleines** pour identifier un éventuel partage de bande passante côté opérateur Internet.
 
 **Mesure client vers serveur en utilisant UDP :**
 ```bash
 # Pourquoi la commande prend autant de temps ?
-# La commande suivante lance un test iPerf3 d'une durée de 30 minutes (=1800 secondes) :
+# La commande suivante lance un test iPerf3 d'une durée de 30 minutes (=1800 secondes) :
 # Exemples pratiques de la commande iPerf3 en UDP :
 
-# 1. Test de bande passante UDP à 100 Mbit/s pendant 30 minutes :
-iperf3.exe -c 192.168.1.10 -u -b 100M -t 1800 -i 3 -f G -P 10
+# 1. Test de bande passante UDP « nominal » à 10 Mbit/s pendant 30 minutes (profil voix/vidéo) :
+iperf3.exe -c 192.168.1.10 -u -b 10M  -t 1800 -i 3 -f M -P 1
 
-# 2. Test de bande passante UDP à 1 Gbit/s pendant 10 minutes avec 5 flux :
-iperf3.exe -c 192.168.1.10 -u -b 1G -t 600 -i 3 -f G -P 5
+# 2. Test de bande passante UDP à 100 Mbit/s pendant 30 minutes :
+iperf3.exe -c 192.168.1.10 -u -b 100M -t 1800 -i 3 -f G -P 4
 
-# 3. Test UDP à 500 Mbit/s pendant 5 minutes :
-iperf3.exe -c 10.0.0.50 -u -b 500M -t 300 -i 3 -f G -P 10
-# → Le paramètre `-t 1800` (soit 1800 secondes) configure la durée du test à 30 minutes, d'où le temps d'exécution long.
+# 3. Test de bande passante UDP à 1 Gbit/s pendant 10 minutes avec 5 flux :
+iperf3.exe -c 192.168.1.10 -u -b 1G   -t 600  -i 3 -f G -P 5
+
+# 4. Test UDP à 500 Mbit/s pendant 5 minutes (palier intermédiaire) :
+iperf3.exe -c 10.0.0.50      -u -b 500M -t 300 -i 3 -f G -P 4
+
+# 5. Recette de montée en charge progressive depuis un débit « sûr » :
+#    a) Démarrer à 10 Mbit/s
+iperf3.exe -c @IP_Serveur    -u -b 10M  -t 300 -i 3 -f M -P 1
+#    b) Puis 50 Mbit/s
+iperf3.exe -c @IP_Serveur    -u -b 50M  -t 300 -i 3 -f M -P 1
+#    c) Puis 100 Mbit/s
+iperf3.exe -c @IP_Serveur    -u -b 100M -t 300 -i 3 -f M -P 1
 ```
 
 **Explication des options :**
